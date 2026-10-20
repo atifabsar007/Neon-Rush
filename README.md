@@ -1,101 +1,86 @@
-# ⚡ NEON RUSH
-### A Futuristic 2D Endless Runner for Android
+# NEON RUSH
 
-**Android Studio | Kotlin | LibGDX | Gradle | Game Development**
+An original, offline, three-lane neon endless runner for Android, built with LibGDX and Kotlin. Source-only portfolio checkpoint v0.1.1.
 
-**NEON RUSH** is a futuristic 2D endless runner developed as part of my Android game development and software engineering journey.
+**Current status:** source generated. This v0.1.1 ZIP repairs the reported `:core:compileKotlin` Java 21 / Kotlin 17 JVM-target mismatch by explicitly setting both Java and Kotlin to JVM 17 in the `core`, `lwjgl3`, and `android` modules. The user's v0.1.0 Gradle build reached this compilation error; the corrected project has not been rebuilt with Android SDK here because the Android SDK, Gradle distribution, and network dependency downloads are unavailable. Eight standalone game-rule smoke checks passed, and source compilation against locally generated mock LibGDX API stubs passed; neither verifies the Android build. No APK/AAB, release signing, Git commits, or GitHub pushes are claimed.
 
-Players navigate through three lanes, dodge obstacles, jump, slide, collect energy orbs, and complete missions while the game gradually increases in difficulty.
+## Playable implementation included
 
-The project focuses on interactive gameplay, responsive controls, character animation, and practical Android game architecture.
+- Main menu, settings, controls guide, game-over screen, retry
+- Three-lane movement using swipes or desktop arrow keys
+- Swipe up / W to jump low purple barriers; swipe down / S to slide under high pink barriers
+- Solid magenta blocks must be avoided by changing lanes
+- Collect cyan energy orbs for 75 points each; distance also contributes to score
+- Increasing game speed and shorter obstacle intervals
+- Pause/resume using the top-right pause button (or P/Escape on desktop)
+- High score and sound/music preferences saved locally
+- Original procedural neon graphics and original synthesized audio
+- Lifecycle-safe pause and centralized screen/resource disposal
+- JVM unit test sources for scoring, input rules, and collisions
 
-## 🎮 Key Features
+## Modules
 
-- **Three-Lane Gameplay:** Smooth movement between three running lanes.
-- **Jump & Slide Mechanics:** Avoid different obstacles using responsive controls.
-- **Custom Character:** A cartoon-style runner inspired by personal photo references.
-- **Dynamic Obstacles:** Crates, road barriers, and overhead beams.
-- **Energy Collection:** Collect glowing energy orbs to increase your score.
-- **Mission System:** Complete challenges involving running distance, collectibles, jumps, slides, and lane changes.
-- **Progressive Difficulty:** Increasing speed and challenge as gameplay continues.
-- **Score Tracking:** Calculate scores and save personal best records.
-- **Audio Settings:** Background music and sound effects with adjustable on/off preferences.
-- **Offline Gameplay:** Play without an internet connection.
+- `core`: LibGDX renderer, navigation, rules, persistence, audio
+- `android`: Android launcher, manifest, packaging/native libraries
+- `lwjgl3`: desktop runner for faster manual testing without an emulator
+- `assets`: self-generated audio (no third-party assets)
+- `docs`: architecture, test status, roadmap, attribution
 
-## 🛠️ Technologies Used
+## Open in Android Studio
 
-| Technology | Purpose |
-|---|---|
-| Android Studio | Development environment |
-| Kotlin | Core programming language |
-| LibGDX | Game rendering and gameplay framework |
-| Gradle | Build configuration |
-| JUnit | Unit testing |
-| Git & GitHub | Version control |
+1. Install Android Studio and its Android SDK Platform 36, SDK Build Tools, and a JDK 17 or 21.
+2. Extract the ZIP to a fresh location; keep the folder named `NEON RUSH`.
+3. Select **File > Open** and select the folder containing `settings.gradle.kts`.
+4. Allow Gradle sync and Android SDK component installation. The first build requires internet to resolve dependencies.
+5. Select the `android` run configuration and run on an emulator or a connected Android phone (USB debugging enabled).
+6. If Studio needs a Gradle command, run `./gradlew :android:assembleDebug` from Terminal (macOS/Linux) or `gradlew.bat :android:assembleDebug` from Windows Command Prompt.
+7. Once built successfully, the debug APK should be under `android/build/outputs/apk/debug/`. Check the actual output before installing.
 
-## 🕹️ Game Controls
+**Gradle bootstrap note:** This ZIP contains verified-hash `gradlew`/`gradlew.bat` bootstrap scripts and `gradle-wrapper.properties`, but does **not** bundle the official `gradle-wrapper.jar` because it could not be retrieved in this environment. These scripts download the official Gradle 8.14.6 distribution after checking its SHA-256. After a successful Gradle setup, replace the bootstrap with the standard official wrapper via `gradle wrapper --gradle-version 8.14.6`, and commit the official wrapper scripts/JAR. Do not attempt to run Gradle without trusted connectivity. The bootstrap is a project convenience, not an official Gradle Wrapper implementation.
 
-| Action | Mobile Control |
-|---|---|
-| Move Left | Swipe left or tap LEFT |
-| Move Right | Swipe right or tap RIGHT |
-| Jump | Swipe up or tap JUMP |
-| Slide | Swipe down or tap SLIDE |
-| Pause | Tap the pause button |
+## Desktop test (optional)
 
-## 🚀 Getting Started
-
-1. Clone or download the repository.
-2. Open the project in Android Studio.
-3. Install the required Android SDK and let Gradle synchronize.
-4. Select an Android emulator or physical device.
-5. Build and run the application.
-
-Run a debug build:
-
-```bash
-./gradlew :android:assembleDebug
+```shell
+./gradlew :lwjgl3:run
 ```
 
-The project targets Android SDK 36. Local build and device verification are still required for this source release.
+On macOS, the LWJGL3 run task applies `-XstartOnFirstThread` automatically.
 
-## 📂 Project Structure
+## JVM tests
 
-```text
-NEON-RUSH/
-├── android/       # Android application
-├── core/          # Gameplay and game logic
-├── lwjgl3/        # Desktop launcher
-├── assets/        # Sound and music assets
-├── docs/          # Documentation
-└── README.md
+```shell
+./gradlew :core:test
 ```
 
-## 🔮 Future Improvements
+Unit test definitions are included; their execution via Gradle is not yet verified.
 
-- [x] Endless runner gameplay
-- [x] Jumping and sliding
-- [x] Cartoon-style character
-- [x] Mission challenges
-- [x] Score and high score system
-- [ ] More character animations and customization
-- [ ] Additional obstacles and environments
-- [ ] Power-ups and achievements
-- [ ] Online leaderboard using Firebase
-- [ ] Optional multiplayer support
-- [ ] Full Android release testing
+## Controls
 
-## 📌 Project Status
+| Input | Action |
+| --- | --- |
+| Swipe left / right | Switch lane |
+| Swipe up | Jump (purple short obstacle) |
+| Swipe down | Slide (magenta overhead gate) |
+| Pause button | Pause and resume |
+| Arrow keys and W/S (desktop) | Desktop controls |
+| P or Escape (desktop) | Pause |
 
-**Version:** 0.3.0  
-**Platform:** Android  
-**Genre:** 2D Endless Runner  
-**Status:** Development Prototype
+## Architecture
 
-NEON RUSH is an ongoing university portfolio project. The goal is to improve gameplay, strengthen development skills, and demonstrate practical software engineering concepts.
+See `docs/ARCHITECTURE.md`. Game rules live in `RunSession` and `ScoreRules`, so they can be tested without Android.
 
-## 👨‍💻 Developer
+## Assets, privacy and publishing
 
-**GitHub:** [@atifabsar007](https://github.com/atifabsar007)
+Graphics are generated procedurally using LibGDX shapes. Original audio and icon are included with the source. No login, network permission, tracking, analytics, ads, or internet permission is requested. No third-party art is used.
 
-Feedback, suggestions, and contributions are welcome!
+To prepare a release, first verify debug builds and device behavior, then use Android Studio's **Generate Signed App Bundle / APK** with a keystore that you store securely outside Git. `targetSdk=36` is configured but Play Console release requirements must be checked again at publication time. No signed AAB is included.
+
+## Repository history
+
+This ZIP has no fabricated Git history. It is deliberately not pushed to a remote repository, because the connected GitHub account was different from the supplied profile. Inspect your local project/repository before copying these files into any existing work. With your approval, the next change should be committed as an honest checkpoint after sync/tests pass.
+
+## v0.1.1 Gradle/JVM target repair
+
+The old v0.1.0 archive used JVM target 17 for Kotlin but implicitly used the Gradle JDK's target (21 on some Android Studio installations) for Java in `core` and `lwjgl3`. Kotlin's Gradle plugin rejects mismatched target versions. This release sets Java `sourceCompatibility` and `targetCompatibility` to Java 17 explicitly in both JVM modules and uses Kotlin `compilerOptions.jvmTarget = JVM_17` in all modules. It also fixes an invalid integer argument supplied to a `Float` drawing parameter. A JDK 21 Gradle daemon can still compile to Java 17 bytecode.
+
+**To replace the broken copy safely:** Extract this v0.1.1 ZIP into a new directory, open the inner `NEON RUSH` folder in Android Studio, sync Gradle, then `Build > Rebuild Project`. Do not copy `.gradle` or `build` caches over from the old project. If you have edited the old project, back up and compare those changes before replacing files.

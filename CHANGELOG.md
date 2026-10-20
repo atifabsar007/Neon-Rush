@@ -1,36 +1,38 @@
+## v0.3.0 - Photo Inspired Runner + Mission Update
+
+- Replaced the generic runner with a cartoonized runner inspired by the provided photos.
+- Updated obstacles to feel more like crates, road barriers, and overhead beams.
+- Rebalanced speed and obstacle timing so runs last longer and feel less punishing early on.
+- Added an offline mission system with progress tracking and mission completion on the game-over screen.
+- Improved gameplay HUD to show mission progress during a run.
+- Kept swipe controls and added easier touch buttons for left, right, jump, and slide.
+
+## v0.2.0 - Recharged UI and control update
+
+- Reworked overall neon UI with cleaner panels, HUD, and menus.
+- Replaced the block avatar with a stylized running character.
+- Added visible gameplay control buttons for left, right, jump, and slide while keeping swipe support.
+- Added jump/slide color coding and contextual action hints for easier obstacle reading.
+- Updated gameplay tutorial messaging and improved readability.
+- Replaced ambient music and sound effects with smoother original procedural audio.
+
 # Changelog
 
-This changelog records implementation checkpoints from the provided source packages. It does **not** claim any tagged GitHub releases, Android CI passes, signed APKs, or completed device tests.
+## [0.1.1] - 2026-10-19
 
-## [Unreleased]
+- Fix Kotlin Gradle plugin JVM target validation: explicitly align Java 17 and Kotlin 17 in `core` and `lwjgl3`.
+- Align Android Kotlin compiler options to JVM 17 and document how to import the corrected source archive.
+- Fix a Kotlin `Float` argument mismatch in the procedural renderer (`NeonPainter`).
+- Re-run eight standalone game-rule smoke checks and Kotlin source compilation using local LibGDX API stubs.
+- This is a source-level repair; full Gradle/Android rebuild is pending on an Android SDK-equipped machine.
 
-### Prepared for publication on 2026-10-20
-- Drafted automated Android CI configuration and GitHub prerelease instructions.
-- Documented architecture, manual test plan, roadmap and asset attribution for publication.
-- No GitHub changes or Actions runs have been made by these documentation files alone.
 
-## [0.3.0] — Source checkpoint
+## [0.1.0] - 2026-10-19 (source checkpoint; not a verified Android release)
 
-### Added
-- Procedural photo-inspired cartoon runner (wavy hair, glasses and formal outfit elements).
-- Six sequential offline missions tracking distance, orbs, score, jumps, slides and lane switches.
-- Mission progress in UI and completion summary on game over.
-
-### Changed
-- Obstacles styled as crates, lower road barriers and overhead beams.
-- Slower opening pace and adjusted spawn intervals.
-
-### Verification
-- Android debug build, JUnit execution, and device tests: **not verified for this checkpoint**.
-
-## [0.2.0] — Source checkpoint
-
-- Revised neon UI and HUD, four on-screen control buttons, swipe controls and original synthesized audio.
-
-## [0.1.1] — Source checkpoint
-
-- Explicit JVM target 17 alignment and earlier Kotlin source correction.
-
-## [0.1.0] — Initial source checkpoint
-
-- Initial offline LibGDX runner structure, screens, scoring, obstacles, orbs and local preferences.
+- Drafted Android Studio multi-module LibGDX Kotlin project.
+- Added menu, controls guide, settings, gameplay, pause, and game-over screens.
+- Added an original neon procedural visual style and synthesized audio files.
+- Implemented pure Kotlin three-lane movement, jump/slide, spawned obstacles, collisions, orbs, score, and speed progression.
+- Added local preferences and JVM unit test sources.
+- Added documentation and a verified-hash Gradle download bootstrap.
+- Did not create git commits or an APK; Android build and emulator checks remain pending.

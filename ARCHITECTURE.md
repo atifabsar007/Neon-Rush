@@ -1,65 +1,17 @@
-# NEON RUSH Architecture
+# Architecture
 
-**Scope:** v0.3.0 source package reviewed on October 20, 2026; runtime behavior is not independently validated on Android.
+`NeonRushGame` extends LibGDX `Game`. It creates one shared `NeonPainter`, one `SaveRepository`, and one `AudioManager`. Its `navigate()` changes the active screen and disposes the replaced screen. `dispose()` disposes the final screen and shared resources.
 
-## Component diagram
+`BaseScreen` owns a `FitViewport(480, 800)`, maps real touch coordinates into game coordinates, and provides consistent UI hit testing. Screens are lightweight and own no GPU resources.
 
-```mermaid
-flowchart TD
-  A[AndroidLauncher / DesktopLauncher] --> G[NeonRushGame]
-  G --> S[Screen navigation]
-  G --> P[NeonPainter]
-  G --> AU[AudioManager]
-  G --> R[SaveRepository]
-  G --> M[MissionManager]
-  S --> MS[MenuScreen]
-  S --> PS[PlayScreen]
-  S --> GS[GameOverScreen]
-  S --> SS[SettingsScreen]
-  S --> HS[HowToPlayScreen]
-  PS --> RS[RunSession]
-  RS --> SR[ScoreRules]
-  PS --> P
-  PS --> AU
-  PS --> M
-  GS --> R
-  M --> R
-```
+`MenuScreen`, `SettingsScreen`, `HowToPlayScreen`, and `GameOverScreen` implement specific interactions. `PlayScreen` translates touch swipes or keyboard input into `RunSession` commands; it advances the simulation only while unpaused and forwards audio events to `AudioManager`.
 
-## Modules
+`RunSession` is an engine-independent gameplay state machine that owns score-relevant state: lane, elapsed time, distance, speed, obstacles, collectibles, jump/slide countdown, collision and end-of-run state. Each obstacle is resolved once when crossing the player's game line, preventing repeated hit detection. All motion is delta-time based, with a maximum accepted simulation step of 50 ms.
 
-| Module | Responsibility |
-| --- | --- |
-| `android/` | Android app launcher, manifest, APK configuration, Android-specific lifecycle. |
-| `core/` | Engine-independent rules, UI/game screens, shared rendering, audio, persistence, missions. |
-| `lwjgl3/` | Desktop launcher for quicker development checks. |
-| `assets/` | Original project WAV music and effects. |
+`ScoreRules` is a stateless formula holder. Both logic classes compile without LibGDX so unit tests do not require Android or a GPU.
 
-## Main classes
+`NeonPainter` uses a shared `ShapeRenderer`, `SpriteBatch`, and `BitmapFont`; it draws original shapes for road, obstacles, player, UI, and energy orbs. It never allocates textures in the render loop and disposes assets at exit. The whole 480x800 world is scaled by `FitViewport` for other displays.
 
-- **NeonRushGame** extends LibGDX `Game`, owns shared services and changes active screens.
-- **BaseScreen** wraps `FitViewport(480f, 800f)`, touch coordinate conversion, and common screen drawing setup.
-- **MenuScreen / SettingsScreen / HowToPlayScreen / GameOverScreen** own respective presentation and navigation events.
-- **PlayScreen** translates keyboard and mobile touch into gameplay commands; it advances the simulation only when the run is not paused.
-- **RunSession** stores lane, obstacle/orb objects, timer, distance, jump/slide duration, collisions, and per-run statistics. This module contains no Android dependencies.
-- **ScoreRules** computes score, movement speed and obstacle interval, and is suitable for ordinary JVM tests.
-- **MissionManager** defines six ordered per-run missions and writes completion state to local preferences when the run ends.
-- **SaveRepository** persists sound/music preferences, high score and mission progress using LibGDX `Preferences`.
-- **AudioManager** owns/cleans up shared `Sound` and `Music` resources and follows app pause/resume events.
-- **NeonPainter** draws the neon world, UI, obstacles, and the reference-photo-inspired cartoon runner with procedural geometry. It disposes its LibGDX resources.
+`SaveRepository` uses LibGDX Preferences for local high score and sound/music toggles, flushed when changed. `AudioManager` loads original WAVs once, gates sound by settings, and pauses music with app lifecycle.
 
-## Gameplay data flow
-
-1. Player taps a button or swipes; `PlayScreen` interprets direction/action.
-2. `PlayScreen` calls `RunSession.moveLeft`, `.jump`, `.slide`, etc.
-3. `RunSession.step(dt)` updates objects and collisions; delta is capped for frame stalls.
-4. `PlayScreen` reads the current session and draws through `NeonPainter`.
-5. On collision, `RunSession.summary()` is passed to `MissionManager`, which records completed mission progress, and `SaveRepository` records best score.
-6. `GameOverScreen` displays the statistics and mission outcome.
-
-## Constraints and known design tradeoffs
-
-- Fixed logical 480×800 `FitViewport` keeps a stable portrait coordinate system but can letterbox taller phone displays. Fully adaptive layout is a future milestone.
-- No production network backend, online leaderboard, C++ engine, or multiplayer implementation is present.
-- Missions update upon run end, not asynchronously mid-run.
-- Android CI and device verification are tracked separately in `docs/TESTING.md`.
+`AndroidLauncher` owns the Android application lifecycle; `DesktopLauncher` enables quick tests without an emulator. Kotlin is the primary language in this checkpoint. A C++ module is deliberately absent because JNI would add complexity without benefiting a simple 2D runner and wasn't confirmed as a coursework requirement.

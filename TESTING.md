@@ -1,41 +1,41 @@
-# NEON RUSH Test Plan and Current Results
+# Testing record (October 19, 2026)
 
-**Report date:** 2026-10-20. This report is grounded in the inspected v0.3.0 source package and the public GitHub repository. The Android build and CI have **not been executed** by this preparation step. A local syntax compilation using LibGDX-style stubs was reported in earlier development, but that is not a real Android Gradle build.
+Do not treat planned tests as passed.
 
-## Current verification matrix
+| Check | Actual result |
+| --- | --- |
+| Compile standalone Kotlin game-rule files with local `kotlinc` 1.9.0 | PASS |
+| Standalone Kotlin gameplay smoke checks (6 assertions) | PASS: run as an executable JAR |
+| Static source and XML structure audit | PASS: checked paths, audio headers, manifest parsing, shell syntax |
+| `./gradlew :core:test` | NOT RUN: Gradle dependency cache not available |
+| `./gradlew :android:assembleDebug` | NOT RUN: Android SDK and Gradle distribution not available |
+| Android device/emulator gameplay | NOT RUN |
+| Audio lifecycle under interruptions | NOT RUN |
+| Portrait layout on phones/tablets | NOT RUN |
+| Signed AAB | NOT RUN |
 
-| Test | Expected result | Status |
-| --- | --- | --- |
-| Core `ScoreRulesTest` | Score formula, speed cap, obstacle interval validated | **JUnit source exists; Gradle run not verified** |
-| Core `RunSessionTest` | Lane clamping; jumping/sliding; orb collection; collisions | **JUnit source exists; Gradle run not verified** |
-| Mission completion/persistence | Six ordered missions advance appropriately | **Requires tests + phone verification** |
-| `gradle :core:test` | All JVM unit tests pass | **NOT RUN here** |
-| `gradle :android:assembleDebug` | Debug APK created without Gradle errors | **NOT RUN here** |
-| Install and launch on Android phone | App starts, navigates, plays and exits without crash | **NOT VERIFIED here** |
-| Menu/settings persistence | Sound/music and scores persist across relaunch | **NOT VERIFIED here** |
-| Pause/resume during a run | No duplicate updates/music or lost state | **NOT VERIFIED here** |
-| Tall-screen UI | Buttons/HUD legible and reachable | **NOT VERIFIED; FitViewport may letterbox** |
-| Release tag / APK match | Release APK was built from tagged commit | **NOT VERIFIED** |
+Unit test source cases include score calculation, difficulty progression, lane bounds, mutually exclusive actions, orb collection, collision freeze and jump-avoid behavior.
 
-## Steps for a real test run
+## Manual acceptance checklist
 
-1. Record source commit SHA: `git rev-parse HEAD`.
-2. Build using Gradle 8.14.6 with JDK 17 and Android SDK 36.
-3. Save console output of `gradle --no-daemon :core:test :android:assembleDebug`.
-4. Inspect `android/build/outputs/apk/debug/` and identify the generated APK.
-5. Install on a physical phone, start from menu, play/retry, pause/background/resume, change preferences and restart.
-6. Check every obstacle collision, jumping/sliding, lane boundaries, collectibles and mission progression.
-7. Repeat layout testing on a taller phone or emulator.
-8. Fill the recorded results below; only then update README verification claims.
+1. Play from main menu and return after game over.
+2. Swipe every direction repeatedly; ensure lane bounds and action exclusivity.
+3. Pass below overhead gates with a slide and above low obstacles with a jump.
+4. Leave to Android home and return; game must remain paused without duplicate simulation.
+5. Toggle both audio settings, exit and reopen app; preferences must remain.
+6. Earn a high score, force stop and reopen; score must persist.
+7. Resize desktop window, verify buttons map correctly; on Android rotate is locked to portrait.
+8. Perform ten consecutive retries and inspect Logcat for crashes/leaks.
+9. Check debug APK can install and start on real hardware.
+10. Validate release AAB after creating a private signing key.
 
-## Manual result log template
+## v0.1.1 JVM target repair (October 19, 2026)
 
-| Date | Commit SHA | Device/Android | Test | Result (PASS/FAIL) | Notes/evidence |
-| --- | --- | --- | --- | --- | --- |
-| _add date_ | _add SHA_ | _model/version_ | Game installation | NOT RUN | _link evidence_ |
-| _add date_ | _add SHA_ | _model/version_ | Gameplay + collisions | NOT RUN | _link evidence_ |
-| _add date_ | _add SHA_ | _model/version_ | High score/settings persistence | NOT RUN | _link evidence_ |
-| _add date_ | _add SHA_ | _model/version_ | Pause/resume | NOT RUN | _link evidence_ |
-| _add date_ | _add SHA_ | _model/version_ | UI tall aspect ratio | NOT RUN | _link evidence_ |
+The v0.1.0 Android Studio build log reported `:core:compileKotlin` failed because `compileJava` targeted JVM 21 while `compileKotlin` targeted JVM 17. The `core` and `lwjgl3` Gradle scripts have been amended to explicitly target JVM 17 for both Java and Kotlin; Android's Kotlin target has been moved to the typed compiler options DSL, also JVM 17. Static source inspection confirms targets are aligned in all three modules. **The Gradle/Android rebuild remains NOT RUN in this environment**, which has no Gradle distribution/Android SDK and cannot resolve the Gradle download host.
 
-Link passing GitHub Actions run URL here once there is one. Do **not** treat a generated YAML file as a passing workflow.
+## v0.1.1 additional checks (October 19, 2026)
+
+- PASS: eight independent game-rule smoke assertions compiled with local `kotlinc -jvm-target 17`, executed as a runnable JAR. Cases: scoring, speed cap, obstacle interval floor, lane clamping, jump/slide exclusivity, orb collection, crash/score freeze, and jumping a low barrier.
+- PASS: Kotlin sources in `core`, `android`, and `lwjgl3` syntax/type-checked with a temporary set of locally generated **mock LibGDX and Android API stubs**. This catches Kotlin source-level problems such as the incorrect `Int` parameter in `NeonPainter.rect` that has now been repaired, but does **not** substitute for real LibGDX/Android dependencies and does **not** verify a working Android build.
+- PASS: XML parsing for Android manifests/resources, RIFF/WAV asset headers, static audit confirming JVM 17 for both Java and Kotlin in `core` and `lwjgl3` plus Kotlin and Java in `android`.
+- NOT RUN: Real `gradlew :core:test`, Android `assembleDebug`, APK installation, and GPU rendering.
