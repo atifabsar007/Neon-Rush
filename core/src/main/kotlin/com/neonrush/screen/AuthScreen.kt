@@ -68,7 +68,7 @@ class AuthScreen(private val game: NeonRushGame) : ScreenAdapter() {
     private fun action(text: String, style: String, height: Float = 54f, callback: () -> Unit) {
         val button = TextButton(text, skin, style)
         button.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: com.badlogic.gdx.scenes.scene2d.Actor?) {
+            override fun changed(event: ChangeListener.ChangeEvent?, actor: com.badlogic.gdx.scenes.scene2d.Actor?) {
                 if (!busy) callback()
             }
         })
