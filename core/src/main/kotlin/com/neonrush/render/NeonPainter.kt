@@ -148,22 +148,56 @@ class NeonPainter : Disposable {
     }
 
     fun road() {
-        shapes.setColor(0.02f, 0.03f, 0.09f, 0.98f)
+        // Layered midnight asphalt with a luminous perspective grid.
+        shapes.setColor(0.012f, 0.018f, 0.055f, 1f)
+        shapes.rect(54f, 0f, 372f, 438f)
+        shapes.setColor(0.035f, 0.055f, 0.12f, 0.72f)
         shapes.rect(66f, 0f, 348f, 430f)
-        shapes.setColor(cyan.r, cyan.g, cyan.b, 0.22f)
-        shapes.rect(66f, 0f, 3f, 430f)
-        shapes.rect(411f, 0f, 3f, 430f)
-        shapes.setColor(purple.r, purple.g, purple.b, 0.26f)
+        shapes.setColor(cyan.r, cyan.g, cyan.b, 0.34f)
+        shapes.rect(64f, 0f, 3f, 438f)
+        shapes.rect(413f, 0f, 3f, 438f)
+        shapes.setColor(purple.r, purple.g, purple.b, 0.30f)
         shapes.rect(181f, 0f, 2f, 430f)
         shapes.rect(297f, 0f, 2f, 430f)
-        for (i in 0..11) {
-            val y = i * 43f + (worldTime * 230f % 43f)
-            shapes.setColor(cyan.r, cyan.g, cyan.b, 0.18f)
-            shapes.rect(72f, y, 336f, 1.4f)
-            shapes.setColor(white.r, white.g, white.b, 0.10f)
-            shapes.rect(118f, y + 7f, 4f, 12f)
-            shapes.rect(238f, y + 7f, 4f, 12f)
-            shapes.rect(358f, y + 7f, 4f, 12f)
+        // Moving lane dashes and cross-road reflections create speed/depth.
+        for (i in 0..13) {
+            val y = (i * 39f + worldTime * 285f % 39f)
+            val alpha = 0.07f + (i % 3) * 0.025f
+            shapes.setColor(0.24f, 0.76f, 1f, alpha)
+            shapes.rect(70f, y, 340f, 1.2f)
+            shapes.setColor(0.54f, 0.72f, 1f, 0.20f)
+            shapes.rect(118f, y + 7f, 3f, 13f)
+            shapes.rect(238f, y + 7f, 3f, 13f)
+            shapes.rect(358f, y + 7f, 3f, 13f)
+        }
+        // Side energy rails and animated light strips.
+        val pulse = 0.25f + 0.18f * (1f + sin(worldTime * 3.2f))
+        shapes.setColor(cyan.r, cyan.g, cyan.b, pulse)
+        shapes.rect(55f, 0f, 2f, 438f)
+        shapes.rect(423f, 0f, 2f, 438f)
+        for (i in 0..7) {
+            val y = (i * 66f + worldTime * 170f % 66f)
+            shapes.setColor(pink.r, pink.g, pink.b, 0.18f)
+            shapes.rect(48f, y, 7f, 18f)
+            shapes.rect(425f, y, 7f, 18f)
+        }
+        // Subtle center-lane glow; gameplay objects remain high contrast.
+        shapes.setColor(0.10f, 0.38f, 0.62f, 0.055f)
+        shapes.rect(184f, 0f, 112f, 430f)
+    }
+
+    fun runnerAura(x: Float, y: Float, jumpHeight: Float) {
+        val pulse = 0.10f + 0.07f * (1f + sin(worldTime * 5.2f))
+        shapes.setColor(cyan.r, cyan.g, cyan.b, pulse)
+        shapes.ellipse(x - 31f, y - 30f + jumpHeight * 0.12f, 62f, 14f)
+        shapes.setColor(purple.r, purple.g, purple.b, 0.10f)
+        shapes.circle(x, y + 24f + jumpHeight, 34f + 2f * sin(worldTime * 4f).toFloat(), 28)
+        for (i in 0..5) {
+            val angle = worldTime * 1.6f + i * 1.047f
+            val px = x + cos(angle) * 27f
+            val py = y + 25f + jumpHeight + sin(angle) * 31f
+            shapes.setColor(if (i % 2 == 0) cyan else pink)
+            shapes.circle(px, py, 1.8f, 8)
         }
     }
 
@@ -240,14 +274,19 @@ class NeonPainter : Disposable {
                 shapes.circle(x, y, 3f, 10)
             }
             RunSession.Kind.BLOCK -> {
-                shapes.setColor(0.17f, 0.12f, 0.08f, 1f)
-                shapes.rect(x - 24f, y - 20f, 48f, 40f)
-                shapes.setColor(0.42f, 0.28f, 0.14f, 1f)
-                shapes.rect(x - 20f, y - 16f, 40f, 32f)
-                shapes.setColor(0.56f, 0.40f, 0.22f, 1f)
-                outline(x - 20f, y - 16f, 40f, 32f, 2f)
-                shapes.rect(x - 3f, y - 16f, 6f, 32f)
-                shapes.rect(x - 20f, y - 1f, 40f, 3f)
+                // Futuristic energy crate with luminous corner rails.
+                shapes.setColor(0.04f, 0.07f, 0.15f, 1f)
+                shapes.rect(x - 27f, y - 23f, 54f, 46f)
+                shapes.setColor(0.08f, 0.18f, 0.29f, 1f)
+                shapes.rect(x - 22f, y - 18f, 44f, 36f)
+                shapes.setColor(cyan.r, cyan.g, cyan.b, 0.82f)
+                outline(x - 22f, y - 18f, 44f, 36f, 2.4f)
+                shapes.setColor(purple.r, purple.g, purple.b, 0.72f)
+                shapes.rect(x - 3f, y - 15f, 6f, 30f)
+                shapes.setColor(pink.r, pink.g, pink.b, 0.8f)
+                shapes.rect(x - 16f, y - 2f, 32f, 4f)
+                shapes.setColor(white.r, white.g, white.b, 0.72f)
+                shapes.circle(x, y, 5f, 12)
             }
             RunSession.Kind.LOW_BARRIER -> {
                 shapes.setColor(0.26f, 0.28f, 0.30f, 1f)

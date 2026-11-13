@@ -21,7 +21,7 @@ class MenuScreen(game: NeonRushGame) : BaseScreen(game) {
         painter.text("NEON", 276f, 639f, 3.7f, painter.cyan(), true)
         painter.text("RUSH", 246f, 585f, 3.8f, painter.white(), true)
         painter.text("WELCOME BACK", 240f, 508f, 0.75f, painter.cyan(), true)
-        painter.text(game.saves.playerName, 240f, 478f, 1.55f, painter.white(), true)
+        painter.fitText(game.saves.playerName, 240f, 478f, 340f, 1.55f, painter.white())
         painter.text("LV ${game.saves.playerLevel}     ${game.saves.coins} NEON COINS", 240f, 450f, 0.88f, painter.lime(), true)
         painter.labelButton("START RUN", 72f, 330f, 336f, 76f, 2.0f)
         painter.labelButton("PROFILE", 72f, 244f, 160f, 62f, 1.12f)

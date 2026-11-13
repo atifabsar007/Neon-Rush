@@ -44,7 +44,7 @@ class ProfileScreen(game: NeonRushGame) : BaseScreen(game) {
         painter.labelButton(if(game.auth.currentUser()?.isGuest == true) "LINK ACCOUNT" else "ACCOUNT", 78f, 42f, 158f, 54f, 0.95f)
         painter.labelButton("LOG OUT", 244f, 42f, 158f, 54f, 1.0f)
         painter.text(if(game.auth.currentUser()?.isGuest == true) "GUEST PROFILE • LOCAL SAVE" else "SIGNED IN • CLOUD SAVE ENABLED", 240f, 88f, 0.66f, painter.muted(), true)
-        painter.text(notice, 240f, 22f, 0.65f, painter.muted(), true)
+        painter.fitText(notice, 240f, 22f, 390f, 0.65f, painter.muted())
         painter.endText()
 
         tapped()?.let { pos ->
