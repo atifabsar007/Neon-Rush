@@ -1,8 +1,8 @@
-# NEON RUSH 0.5.1 — Android Studio Source
+# NEON RUSH 0.6.0 — Modern account UX and neon gameplay
 
 NEON RUSH is an offline-first, three-lane neon endless runner built with Kotlin and LibGDX.
 
-## What's included in 0.5.1
+## What's included in 0.6.0\n\n- Dedicated full-page Create Account, Login and Password Reset screens; no chained native input popups.\n- Username + email registration and login with email or username. Username lookup is handled by a Firebase callable function and does not publish account email addresses.\n- Modernized in-game road lighting, animated energy rails, player aura and futuristic obstacle art.\n- Better text fitting in profile, dashboard, leaderboard and run-summary panels.\n- Existing three-lane movement, jump, slide, character proportions and swipe controls retained.\n\n## What's included in 0.5.1
 
 - Account entry flow with email/password registration and login.
 - Password-reset flow and Google Sign-In integration (requires Firebase OAuth setup).
@@ -56,3 +56,4 @@ The source was committed to the `upgrade/neon-rush-v0.5.1` branch. The Android b
 ## Privacy and release
 
 When Firebase is configured, player profile and progression data are synchronized to the configured Firebase project. Review and deploy restrictive Firestore security rules before public release. Keep release signing keys outside Git and use Android Studio's signed App Bundle workflow for distribution.
+\n\n## NEON RUSH 0.6.0 setup\n\nSee [FIREBASE_SETUP.md](FIREBASE_SETUP.md) for deploying the secure username-login Cloud Function and Firestore rules. Configure the Functions secret `FIREBASE_WEB_API_KEY` before deploying username login. The Cloud Functions deployment requires Firebase Blaze billing.\n
