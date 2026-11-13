@@ -1,60 +1,44 @@
-# NEON RUSH 0.4.0 — Android Studio Source
+# NEON RUSH 0.5.1 — Android Studio Source
 
 NEON RUSH is an offline-first, three-lane neon endless runner built with Kotlin and LibGDX.
 
-## What's new in 0.4.0
+## What's included in 0.5.1
 
-- Refreshed main menu with player identity, level, coins, best score and active mission.
-- Local player profile with editable nickname.
-- Persistent progression: XP, levels, Neon Coins, total runs, lifetime distance and total orbs.
-- Run-end rewards calculated from distance and collected orbs.
-- Expanded run summary with XP and coin rewards.
-- Cleaner menu hierarchy and more consistent visual layout.
-- XP progress indicator on the profile screen.
-- Lifetime milestone tracker with unlock states.
-- Improved lane-edge feedback: no movement sound when the player is already at the edge.
-- Android app version updated to 0.4.0.
+- Account entry flow with email/password registration and login.
+- Password-reset flow and Google Sign-In integration (requires Firebase OAuth setup).
+- Guest sign-in and guest-to-account credential linking.
+- Player profile, progression, XP, coins, missions and run summaries.
+- Firebase-backed player data, progress synchronization and leaderboard integration (requires Firebase configuration and Firestore security rules).
+- UI text fitting and wrapping improvements for the LibGDX logical canvas.
+- Frame-rate-independent lane movement and more responsive swipe handling.
+- Android CI workflow for unit tests and debug APK assembly.
 
-## Current feature set
+## Firebase configuration
 
-- Three-lane endless runner with lane switching, jump and slide.
-- Blocks, low barriers, high barriers and energy orbs.
-- Increasing speed and obstacle density.
-- Swipe controls, on-screen controls and desktop keyboard controls.
-- Pause/resume, sound effects and background music preferences.
-- Active missions and mission progression.
-- Personal best score and local player progression.
-- Procedural neon visuals and original synthesized audio.
-- Local-only profile and save data. No account credentials, analytics, ads or tracking are collected.
+Online authentication and cloud features require a Firebase project. Follow [FIREBASE_SETUP.md](FIREBASE_SETUP.md), add your app in Firebase using application ID `com.neonrush.game`, enable Email/Password and Anonymous providers, configure Google Sign-In and the Web OAuth client, enable Cloud Firestore, and place `google-services.json` in the `android/` module.
 
-## Important: account support
-
-The profile in this build is a **local player profile**, not an online account. Real email/password registration, password reset, cloud save synchronization and global leaderboards require a backend (for example Firebase Authentication + Firestore, or a custom API). No fake online sign-in is presented in this release. The app does not request Internet permission.
+Without Firebase configuration, Google Sign-In and cloud services are unavailable. Guest/local play remains the intended fallback. Never commit service-account private keys, signing keystores, passwords, or other secrets.
 
 ## Open in Android Studio
 
-1. Extract this ZIP.
-2. Open the `NEON RUSH` folder — the folder containing `settings.gradle.kts` — in Android Studio.
-3. Use JDK 17 or 21 and install Android SDK Platform 36 / Build Tools if Android Studio requests them.
-4. Allow Gradle to download dependencies on a trusted internet connection.
-5. Select the `android` run configuration and run on an emulator or connected Android device.
-6. Or run `./gradlew :android:assembleDebug` from the project root.
+1. Open the folder containing `settings.gradle.kts`.
+2. Use JDK 17 and install Android SDK Platform 36 / Build Tools as prompted.
+3. Add Firebase configuration if testing online features.
+4. Sync Gradle and run the `android` configuration on an emulator or device.
 
-The debug APK, if the build succeeds, is normally written to `android/build/outputs/apk/debug/`.
+The project currently contains Gradle bootstrap scripts but no standard `gradle-wrapper.jar`. The GitHub Actions workflow installs Gradle 8.14.6 directly. For local builds, use an installed Gradle 8.14.6 or regenerate a standard wrapper from a trusted Gradle installation.
 
-## Tests and verification
+## Verification status
 
-The project includes JVM tests for score rules, lane bounds, jump/slide exclusivity, orb collection and collision handling. Run `./gradlew :core:test` after Gradle has been initialized.
+The source was committed to the `upgrade/neon-rush-v0.5.1` branch. The Android build and on-device behavior must still be verified by GitHub Actions and Android Studio. No successful APK build, signed release, or production Firebase deployment is claimed until those checks pass.
 
-**Build verification status for this archive:** source changes were inspected, but a Gradle build could not be run in the preparation environment because the Gradle distribution host was unreachable. Android SDK packaging and on-device gameplay therefore still need to be verified in Android Studio. Do not treat this ZIP as a tested APK or signed release.
+## Project modules
 
-## Modules
-
-- `core`: game loop, screens, rendering, game rules and local progression.
-- `android`: Android launcher and packaging.
+- `core`: LibGDX game loop, screens, rendering, game rules and local progression.
+- `android`: Android launcher, Firebase integration and packaging.
 - `lwjgl3`: optional desktop runner.
 - `assets`: original sound assets.
-- `docs`: architecture, testing, roadmap and asset attribution.
+- `docs`: architecture, testing, roadmap and UI fix notes.
 
 ## Controls
 
@@ -63,25 +47,12 @@ The project includes JVM tests for score rules, lane bounds, jump/slide exclusiv
 | Swipe left / right | Change lane |
 | Swipe up | Jump |
 | Swipe down | Slide |
-| On-screen buttons | Move, jump, slide, pause |
+| On-screen controls | Move, jump, slide and pause |
 | Arrow keys / A-D | Change lane (desktop) |
 | W / Up / Space | Jump (desktop) |
 | S / Down | Slide (desktop) |
 | P / Escape | Pause (desktop) |
 
-## Privacy
+## Privacy and release
 
-Profile name and progression are stored locally using Android preferences. This release does not transmit player information to a server.
-
-
-## Online accounts (v0.5.0)
-
-Firebase setup is required for email/password accounts, Google Sign-In, password reset, cloud progress and the global leaderboard. Follow [FIREBASE_SETUP.md](FIREBASE_SETUP.md) and place your Firebase `google-services.json` in `android/`. Without Firebase configuration, the app still runs in local guest mode. Guest progress can be linked to a new email/password or Google account from the Create Account / Google flow.
-
-
-## Version 0.5.1 UI and build hotfix
-- Fixes the missing `default_web_client_id` compile-time resource reference.
-- Google Sign-In now checks for the generated OAuth resource at runtime and displays setup guidance if Firebase OAuth is not configured.
-- Text is automatically fitted to the logical canvas; button labels are fitted to their button bounds. Longer help and mission descriptions wrap within cards.
-- Lane movement uses frame-rate-independent easing; swipe detection is slightly more responsive.
-- For Google Sign-In, keep `google-services.json` in the `android/` module and configure the Web OAuth client plus SHA-1/SHA-256 in Firebase.
+When Firebase is configured, player profile and progression data are synchronized to the configured Firebase project. Review and deploy restrictive Firestore security rules before public release. Keep release signing keys outside Git and use Android Studio's signed App Bundle workflow for distribution.
