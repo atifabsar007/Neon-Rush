@@ -1,86 +1,87 @@
-# NEON RUSH
+# NEON RUSH 0.4.0 — Android Studio Source
 
-An original, offline, three-lane neon endless runner for Android, built with LibGDX and Kotlin. Source-only portfolio checkpoint v0.1.1.
+NEON RUSH is an offline-first, three-lane neon endless runner built with Kotlin and LibGDX.
 
-**Current status:** source generated. This v0.1.1 ZIP repairs the reported `:core:compileKotlin` Java 21 / Kotlin 17 JVM-target mismatch by explicitly setting both Java and Kotlin to JVM 17 in the `core`, `lwjgl3`, and `android` modules. The user's v0.1.0 Gradle build reached this compilation error; the corrected project has not been rebuilt with Android SDK here because the Android SDK, Gradle distribution, and network dependency downloads are unavailable. Eight standalone game-rule smoke checks passed, and source compilation against locally generated mock LibGDX API stubs passed; neither verifies the Android build. No APK/AAB, release signing, Git commits, or GitHub pushes are claimed.
+## What's new in 0.4.0
 
-## Playable implementation included
+- Refreshed main menu with player identity, level, coins, best score and active mission.
+- Local player profile with editable nickname.
+- Persistent progression: XP, levels, Neon Coins, total runs, lifetime distance and total orbs.
+- Run-end rewards calculated from distance and collected orbs.
+- Expanded run summary with XP and coin rewards.
+- Cleaner menu hierarchy and more consistent visual layout.
+- XP progress indicator on the profile screen.
+- Lifetime milestone tracker with unlock states.
+- Improved lane-edge feedback: no movement sound when the player is already at the edge.
+- Android app version updated to 0.4.0.
 
-- Main menu, settings, controls guide, game-over screen, retry
-- Three-lane movement using swipes or desktop arrow keys
-- Swipe up / W to jump low purple barriers; swipe down / S to slide under high pink barriers
-- Solid magenta blocks must be avoided by changing lanes
-- Collect cyan energy orbs for 75 points each; distance also contributes to score
-- Increasing game speed and shorter obstacle intervals
-- Pause/resume using the top-right pause button (or P/Escape on desktop)
-- High score and sound/music preferences saved locally
-- Original procedural neon graphics and original synthesized audio
-- Lifecycle-safe pause and centralized screen/resource disposal
-- JVM unit test sources for scoring, input rules, and collisions
+## Current feature set
 
-## Modules
+- Three-lane endless runner with lane switching, jump and slide.
+- Blocks, low barriers, high barriers and energy orbs.
+- Increasing speed and obstacle density.
+- Swipe controls, on-screen controls and desktop keyboard controls.
+- Pause/resume, sound effects and background music preferences.
+- Active missions and mission progression.
+- Personal best score and local player progression.
+- Procedural neon visuals and original synthesized audio.
+- Local-only profile and save data. No account credentials, analytics, ads or tracking are collected.
 
-- `core`: LibGDX renderer, navigation, rules, persistence, audio
-- `android`: Android launcher, manifest, packaging/native libraries
-- `lwjgl3`: desktop runner for faster manual testing without an emulator
-- `assets`: self-generated audio (no third-party assets)
-- `docs`: architecture, test status, roadmap, attribution
+## Important: account support
+
+The profile in this build is a **local player profile**, not an online account. Real email/password registration, password reset, cloud save synchronization and global leaderboards require a backend (for example Firebase Authentication + Firestore, or a custom API). No fake online sign-in is presented in this release. The app does not request Internet permission.
 
 ## Open in Android Studio
 
-1. Install Android Studio and its Android SDK Platform 36, SDK Build Tools, and a JDK 17 or 21.
-2. Extract the ZIP to a fresh location; keep the folder named `NEON RUSH`.
-3. Select **File > Open** and select the folder containing `settings.gradle.kts`.
-4. Allow Gradle sync and Android SDK component installation. The first build requires internet to resolve dependencies.
-5. Select the `android` run configuration and run on an emulator or a connected Android phone (USB debugging enabled).
-6. If Studio needs a Gradle command, run `./gradlew :android:assembleDebug` from Terminal (macOS/Linux) or `gradlew.bat :android:assembleDebug` from Windows Command Prompt.
-7. Once built successfully, the debug APK should be under `android/build/outputs/apk/debug/`. Check the actual output before installing.
+1. Extract this ZIP.
+2. Open the `NEON RUSH` folder — the folder containing `settings.gradle.kts` — in Android Studio.
+3. Use JDK 17 or 21 and install Android SDK Platform 36 / Build Tools if Android Studio requests them.
+4. Allow Gradle to download dependencies on a trusted internet connection.
+5. Select the `android` run configuration and run on an emulator or connected Android device.
+6. Or run `./gradlew :android:assembleDebug` from the project root.
 
-**Gradle bootstrap note:** This ZIP contains verified-hash `gradlew`/`gradlew.bat` bootstrap scripts and `gradle-wrapper.properties`, but does **not** bundle the official `gradle-wrapper.jar` because it could not be retrieved in this environment. These scripts download the official Gradle 8.14.6 distribution after checking its SHA-256. After a successful Gradle setup, replace the bootstrap with the standard official wrapper via `gradle wrapper --gradle-version 8.14.6`, and commit the official wrapper scripts/JAR. Do not attempt to run Gradle without trusted connectivity. The bootstrap is a project convenience, not an official Gradle Wrapper implementation.
+The debug APK, if the build succeeds, is normally written to `android/build/outputs/apk/debug/`.
 
-## Desktop test (optional)
+## Tests and verification
 
-```shell
-./gradlew :lwjgl3:run
-```
+The project includes JVM tests for score rules, lane bounds, jump/slide exclusivity, orb collection and collision handling. Run `./gradlew :core:test` after Gradle has been initialized.
 
-On macOS, the LWJGL3 run task applies `-XstartOnFirstThread` automatically.
+**Build verification status for this archive:** source changes were inspected, but a Gradle build could not be run in the preparation environment because the Gradle distribution host was unreachable. Android SDK packaging and on-device gameplay therefore still need to be verified in Android Studio. Do not treat this ZIP as a tested APK or signed release.
 
-## JVM tests
+## Modules
 
-```shell
-./gradlew :core:test
-```
-
-Unit test definitions are included; their execution via Gradle is not yet verified.
+- `core`: game loop, screens, rendering, game rules and local progression.
+- `android`: Android launcher and packaging.
+- `lwjgl3`: optional desktop runner.
+- `assets`: original sound assets.
+- `docs`: architecture, testing, roadmap and asset attribution.
 
 ## Controls
 
 | Input | Action |
-| --- | --- |
-| Swipe left / right | Switch lane |
-| Swipe up | Jump (purple short obstacle) |
-| Swipe down | Slide (magenta overhead gate) |
-| Pause button | Pause and resume |
-| Arrow keys and W/S (desktop) | Desktop controls |
-| P or Escape (desktop) | Pause |
+|---|---|
+| Swipe left / right | Change lane |
+| Swipe up | Jump |
+| Swipe down | Slide |
+| On-screen buttons | Move, jump, slide, pause |
+| Arrow keys / A-D | Change lane (desktop) |
+| W / Up / Space | Jump (desktop) |
+| S / Down | Slide (desktop) |
+| P / Escape | Pause (desktop) |
 
-## Architecture
+## Privacy
 
-See `docs/ARCHITECTURE.md`. Game rules live in `RunSession` and `ScoreRules`, so they can be tested without Android.
+Profile name and progression are stored locally using Android preferences. This release does not transmit player information to a server.
 
-## Assets, privacy and publishing
 
-Graphics are generated procedurally using LibGDX shapes. Original audio and icon are included with the source. No login, network permission, tracking, analytics, ads, or internet permission is requested. No third-party art is used.
+## Online accounts (v0.5.0)
 
-To prepare a release, first verify debug builds and device behavior, then use Android Studio's **Generate Signed App Bundle / APK** with a keystore that you store securely outside Git. `targetSdk=36` is configured but Play Console release requirements must be checked again at publication time. No signed AAB is included.
+Firebase setup is required for email/password accounts, Google Sign-In, password reset, cloud progress and the global leaderboard. Follow [FIREBASE_SETUP.md](FIREBASE_SETUP.md) and place your Firebase `google-services.json` in `android/`. Without Firebase configuration, the app still runs in local guest mode. Guest progress can be linked to a new email/password or Google account from the Create Account / Google flow.
 
-## Repository history
 
-This ZIP has no fabricated Git history. It is deliberately not pushed to a remote repository, because the connected GitHub account was different from the supplied profile. Inspect your local project/repository before copying these files into any existing work. With your approval, the next change should be committed as an honest checkpoint after sync/tests pass.
-
-## v0.1.1 Gradle/JVM target repair
-
-The old v0.1.0 archive used JVM target 17 for Kotlin but implicitly used the Gradle JDK's target (21 on some Android Studio installations) for Java in `core` and `lwjgl3`. Kotlin's Gradle plugin rejects mismatched target versions. This release sets Java `sourceCompatibility` and `targetCompatibility` to Java 17 explicitly in both JVM modules and uses Kotlin `compilerOptions.jvmTarget = JVM_17` in all modules. It also fixes an invalid integer argument supplied to a `Float` drawing parameter. A JDK 21 Gradle daemon can still compile to Java 17 bytecode.
-
-**To replace the broken copy safely:** Extract this v0.1.1 ZIP into a new directory, open the inner `NEON RUSH` folder in Android Studio, sync Gradle, then `Build > Rebuild Project`. Do not copy `.gradle` or `build` caches over from the old project. If you have edited the old project, back up and compare those changes before replacing files.
+## Version 0.5.1 UI and build hotfix
+- Fixes the missing `default_web_client_id` compile-time resource reference.
+- Google Sign-In now checks for the generated OAuth resource at runtime and displays setup guidance if Firebase OAuth is not configured.
+- Text is automatically fitted to the logical canvas; button labels are fitted to their button bounds. Longer help and mission descriptions wrap within cards.
+- Lane movement uses frame-rate-independent easing; swipe detection is slightly more responsive.
+- For Google Sign-In, keep `google-services.json` in the `android/` module and configure the Web OAuth client plus SHA-1/SHA-256 in Firebase.
