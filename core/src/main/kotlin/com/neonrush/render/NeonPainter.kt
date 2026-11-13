@@ -274,14 +274,19 @@ class NeonPainter : Disposable {
                 shapes.circle(x, y, 3f, 10)
             }
             RunSession.Kind.BLOCK -> {
-                shapes.setColor(0.17f, 0.12f, 0.08f, 1f)
-                shapes.rect(x - 24f, y - 20f, 48f, 40f)
-                shapes.setColor(0.42f, 0.28f, 0.14f, 1f)
-                shapes.rect(x - 20f, y - 16f, 40f, 32f)
-                shapes.setColor(0.56f, 0.40f, 0.22f, 1f)
-                outline(x - 20f, y - 16f, 40f, 32f, 2f)
-                shapes.rect(x - 3f, y - 16f, 6f, 32f)
-                shapes.rect(x - 20f, y - 1f, 40f, 3f)
+                // Futuristic energy crate with luminous corner rails.
+                shapes.setColor(0.04f, 0.07f, 0.15f, 1f)
+                shapes.rect(x - 27f, y - 23f, 54f, 46f)
+                shapes.setColor(0.08f, 0.18f, 0.29f, 1f)
+                shapes.rect(x - 22f, y - 18f, 44f, 36f)
+                shapes.setColor(cyan.r, cyan.g, cyan.b, 0.82f)
+                outline(x - 22f, y - 18f, 44f, 36f, 2.4f)
+                shapes.setColor(purple.r, purple.g, purple.b, 0.72f)
+                shapes.rect(x - 3f, y - 15f, 6f, 30f)
+                shapes.setColor(pink.r, pink.g, pink.b, 0.8f)
+                shapes.rect(x - 16f, y - 2f, 32f, 4f)
+                shapes.setColor(white.r, white.g, white.b, 0.72f)
+                shapes.circle(x, y, 5f, 12)
             }
             RunSession.Kind.LOW_BARRIER -> {
                 shapes.setColor(0.26f, 0.28f, 0.30f, 1f)
