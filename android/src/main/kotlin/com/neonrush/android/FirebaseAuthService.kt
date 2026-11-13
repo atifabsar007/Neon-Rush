@@ -39,14 +39,11 @@ class FirebaseAuthService(private val activity: Activity) : AuthService {
             val profile=com.google.firebase.auth.UserProfileChangeRequest.Builder().setDisplayName(name.trim()).build()
             u.updateProfile(profile).addOnCompleteListener {
                 val usernameRef=db.collection("usernames").document(normalized)
-                db.runTransaction { tx ->
-                    if(tx.get(usernameRef).exists()) throw IllegalStateException("That username is already taken. Choose another one.")
-                    tx.set(usernameRef,mapOf("uid" to u.uid))
-                }.addOnSuccessListener {
+                usernameRef.set(mapOf("uid" to u.uid)).addOnSuccessListener {
                     db.collection("players").document(u.uid).set(mapOf("uid" to u.uid,"username" to normalized,"name" to name.trim(),"email" to email.trim()),com.google.firebase.firestore.SetOptions.merge())
                     db.collection("leaderboard").document(u.uid).set(mapOf("uid" to u.uid,"name" to name.trim(),"level" to 1),com.google.firebase.firestore.SetOptions.merge())
                     callback(Result.success(user()!!))
-                }.addOnFailureListener { callback(Result.failure(it)) }
+                }.addOnFailureListener { callback(Result.failure(IllegalStateException("That username is already taken. Choose another one."))) }
             }
         }
     }
