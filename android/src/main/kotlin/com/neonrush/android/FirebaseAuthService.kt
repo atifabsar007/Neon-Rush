@@ -32,9 +32,41 @@ class FirebaseAuthService(private val activity: Activity) : AuthService {
         val credential=com.google.firebase.auth.EmailAuthProvider.getCredential(email.trim(),password)
         val existing=auth.currentUser
         val task=if(existing?.isAnonymous==true) existing.linkWithCredential(credential) else auth.createUserWithEmailAndPassword(email.trim(),password)
-        task.addOnCompleteListener { t -> if(!t.isSuccessful){callback(Result.failure(t.exception?:Exception("Registration failed")));return@addOnCompleteListener}; val u=auth.currentUser!!; val profile=com.google.firebase.auth.UserProfileChangeRequest.Builder().setDisplayName(name.trim()).build(); u.updateProfile(profile).addOnCompleteListener { db.collection("players").document(u.uid).set(mapOf("uid" to u.uid,"name" to name.trim(),"email" to email.trim()),com.google.firebase.firestore.SetOptions.merge()); db.collection("leaderboard").document(u.uid).set(mapOf("uid" to u.uid,"name" to name.trim(),"level" to 1),com.google.firebase.firestore.SetOptions.merge()); callback(Result.success(user()!!)) } }
+        task.addOnCompleteListener { t ->
+            if(!t.isSuccessful){callback(Result.failure(t.exception?:Exception("Registration failed")));return@addOnCompleteListener}
+            val u=auth.currentUser!!
+            val normalized=name.trim().lowercase()
+            val profile=com.google.firebase.auth.UserProfileChangeRequest.Builder().setDisplayName(name.trim()).build()
+            u.updateProfile(profile).addOnCompleteListener {
+                val usernameRef=db.collection("usernames").document(normalized)
+                db.runTransaction { tx ->
+                    if(tx.get(usernameRef).exists()) throw IllegalStateException("That username is already taken. Choose another one.")
+                    tx.set(usernameRef,mapOf("uid" to u.uid))
+                }.addOnSuccessListener {
+                    db.collection("players").document(u.uid).set(mapOf("uid" to u.uid,"username" to normalized,"name" to name.trim(),"email" to email.trim()),com.google.firebase.firestore.SetOptions.merge())
+                    db.collection("leaderboard").document(u.uid).set(mapOf("uid" to u.uid,"name" to name.trim(),"level" to 1),com.google.firebase.firestore.SetOptions.merge())
+                    callback(Result.success(user()!!))
+                }.addOnFailureListener { callback(Result.failure(it)) }
+            }
+        }
     }
-    override fun login(email:String,password:String,callback:(Result<AuthService.User>)->Unit){ auth.signInWithEmailAndPassword(email.trim(),password).addOnCompleteListener { if(it.isSuccessful) callback(Result.success(user()!!)) else callback(Result.failure(it.exception?:Exception("Login failed"))) } }
+    override fun login(email:String,password:String,callback:(Result<AuthService.User>)->Unit){
+        val identifier=email.trim()
+        if(identifier.contains("@")){
+            auth.signInWithEmailAndPassword(identifier,password).addOnCompleteListener { if(it.isSuccessful) callback(Result.success(user()!!)) else callback(Result.failure(it.exception?:Exception("Login failed"))) }
+            return
+        }
+        com.google.firebase.functions.FirebaseFunctions.getInstance().getHttpsCallable("loginWithUsername")
+            .call(mapOf("username" to identifier.lowercase(),"password" to password))
+            .addOnSuccessListener { result ->
+                val token=(result.data as? Map<*,*>)?.get("customToken") as? String
+                if(token.isNullOrBlank()){callback(Result.failure(IllegalStateException("Username login could not be completed.")));return@addOnSuccessListener}
+                auth.signInWithCustomToken(token).addOnCompleteListener { task ->
+                    if(task.isSuccessful) callback(Result.success(user()!!))
+                    else callback(Result.failure(task.exception?:Exception("Username login failed")))
+                }
+            }.addOnFailureListener { callback(Result.failure(it)) }
+    }
     override fun googleSignIn(callback:(Result<AuthService.User>)->Unit){
         // The Google Services plugin generates this resource only when a valid
         // google-services.json contains an OAuth web client. Resolve it by name
