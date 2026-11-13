@@ -1,0 +1,20 @@
+# Android Studio, Gradle, OS, signing
+.gradle/
+**/build/
+.idea/
+*.iml
+local.properties
+.DS_Store
+Thumbs.db
+.cxx/
+.externalNativeBuild/
+captures/
+*.apk
+*.aab
+*.jks
+*.keystore
+*.hprof
+android/src/main/jniLibs/
+
+# Firebase app configuration
+android/google-services.json
