@@ -48,6 +48,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.5.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-functions")
     implementation("com.google.android.gms:play-services-auth:21.4.0")
     listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64").forEach { abi ->
         add("natives", "com.badlogicgames.gdx:gdx-platform:1.14.2:natives-$abi")
