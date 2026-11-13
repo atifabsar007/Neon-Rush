@@ -75,7 +75,8 @@ class PlayScreen(game: NeonRushGame) : BaseScreen(game) {
         val jumpProgress = 1f - session.jumpRemaining / 0.78f
         val jumpHeight = if (session.jumpRemaining > 0f) sin(jumpProgress * PI).toFloat() * 72f else 0f
         val runPhase = session.distanceMeters * 0.10f
-        painter.runnerAura(laneX, RunSession.PLAYER_Y, jumpHeight)\n        painter.playerRunner(laneX, RunSession.PLAYER_Y, jumpHeight, session.slideRemaining > 0f, runPhase)
+        painter.runnerAura(laneX, RunSession.PLAYER_Y, jumpHeight)
+        painter.playerRunner(laneX, RunSession.PLAYER_Y, jumpHeight, session.slideRemaining > 0f, runPhase)
         if (orbFlashRemaining > 0f) painter.orbParticles(laneX, RunSession.PLAYER_Y + 32f, orbFlashRemaining)
         painter.hudBar(speedProgress())
         painter.controlPad(actionFlash, tutorialTime > 0f)
